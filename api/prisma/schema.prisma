@@ -1,0 +1,151 @@
+generator client {
+  provider        = "prisma-client"
+  output          = "../src/generated/prisma"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  extensions = [vector]
+}
+
+enum UserRole {
+  operator
+  reviewer
+  admin
+}
+
+enum DocumentStatus {
+  uploaded
+  parsing
+  parsed
+  error
+}
+
+enum JobType {
+  parse_document
+  chunk_embed
+  fact_extract
+  timeline_build
+  issue_spot
+  draft_compose
+  validate
+}
+
+enum JobStatus {
+  pending
+  running
+  completed
+  failed
+}
+
+enum ArtifactType {
+  facts_v1
+  timeline_v1
+  issues_v1
+  brief_v1
+  validation_v1
+}
+
+model User {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  role         UserRole  @default(operator)
+  passwordHash String    @map("password_hash")
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  projects Project[]
+
+  @@map("users")
+}
+
+model Project {
+  id        String   @id @default(uuid())
+  name      String
+  objective String
+  createdBy String   @map("created_by")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  creator   User       @relation(fields: [createdBy], references: [id])
+  documents Document[]
+  jobs      Job[]
+  artifacts Artifact[]
+
+  @@map("projects")
+}
+
+model Document {
+  id          String         @id @default(uuid())
+  projectId   String         @map("project_id")
+  filename    String
+  storagePath String?        @map("storage_path")
+  mime        String?
+  status      DocumentStatus @default(uploaded)
+  createdAt   DateTime       @default(now()) @map("created_at")
+
+  project Project        @relation(fields: [projectId], references: [id])
+  pages   DocumentPage[]
+  chunks  Chunk[]
+
+  @@map("documents")
+}
+
+model DocumentPage {
+  id         String  @id @default(uuid())
+  documentId String  @map("document_id")
+  pageNum    Int     @map("page_num")
+  text       String
+  metaJson   Json?   @map("meta_json")
+
+  document Document @relation(fields: [documentId], references: [id])
+
+  @@map("document_pages")
+}
+
+model Chunk {
+  id              String                       @id @default(uuid())
+  documentId      String                       @map("document_id")
+  pageNum         Int                          @map("page_num")
+  chunkIndex      Int                          @map("chunk_index")
+  text            String
+  embeddingVector Unsupported("vector(384)")?  @map("embedding_vector")
+  charStart       Int                          @map("char_start")
+  charEnd         Int                          @map("char_end")
+  metaJson        Json?                        @map("meta_json")
+
+  document Document @relation(fields: [documentId], references: [id])
+
+  @@map("chunks")
+}
+
+model Job {
+  id          String    @id @default(uuid())
+  projectId   String    @map("project_id")
+  type        JobType
+  status      JobStatus @default(pending)
+  payloadJson Json?     @map("payload_json")
+  attempts    Int       @default(0)
+  error       String?
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  project   Project    @relation(fields: [projectId], references: [id])
+  artifacts Artifact[]
+
+  @@map("jobs")
+}
+
+model Artifact {
+  id             String       @id @default(uuid())
+  projectId      String       @map("project_id")
+  type           ArtifactType
+  version        Int          @default(1)
+  contentJson    Json         @map("content_json")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  createdByJobId String?      @map("created_by_job_id")
+
+  project Project @relation(fields: [projectId], references: [id])
+  job     Job?    @relation(fields: [createdByJobId], references: [id])
+
+  @@map("artifacts")
+}

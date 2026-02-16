@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.local
+.env.*.local
+helping.txt
+
+# Build
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Prisma
+api/prisma/*.db
+api/src/generated/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Uploads
+uploads/
+
+# Claude
+.claude/
