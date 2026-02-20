@@ -32,6 +32,9 @@ npm-debug.log*
 # Uploads
 uploads/
 
+# Docs (local only)
+docs/
+
 # Claude
 .claude/
 CLAUDE.md
