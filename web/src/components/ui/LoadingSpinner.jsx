@@ -1,8 +1,14 @@
-export default function LoadingSpinner({ className = '' }) {
+const sizes = {
+  sm: 'h-5 w-5',
+  md: 'h-8 w-8',
+  lg: 'h-12 w-12',
+}
+
+export default function LoadingSpinner({ size = 'md', className = '' }) {
   return (
     <div className={`flex items-center justify-center ${className}`}>
       <svg
-        className="h-8 w-8 animate-spin text-blue-600"
+        className={`animate-spin text-brand-500 ${sizes[size] || sizes.md}`}
         fill="none"
         viewBox="0 0 24 24"
       >
