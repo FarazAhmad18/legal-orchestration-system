@@ -1,4 +1,5 @@
 import { usePipelineStatus, useRunAnalysis } from '../../hooks/useJobs'
+import { useChunkStats } from '../../hooks/useChunks'
 import Button from '../ui/Button'
 import toast from 'react-hot-toast'
 
@@ -64,7 +65,10 @@ function StepConnector() {
 
 export default function PipelineStatus({ projectId }) {
   const { data: pipeline, isLoading } = usePipelineStatus(projectId)
+  const { data: chunkStats } = useChunkStats(projectId)
   const runMutation = useRunAnalysis(projectId)
+
+  const hasChunks = chunkStats?.totalChunks > 0
 
   async function handleRun() {
     try {
@@ -74,6 +78,9 @@ export default function PipelineStatus({ projectId }) {
       toast.error(err.response?.data?.error?.message || 'Failed to start analysis')
     }
   }
+
+  // Don't show pipeline bar if there are no chunks to analyze
+  if (!hasChunks) return null
 
   const hasRun = pipeline && pipeline.overallStatus !== 'not_started'
   const isRunning = pipeline?.overallStatus === 'running'

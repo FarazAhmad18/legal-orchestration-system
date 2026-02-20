@@ -7,6 +7,7 @@ import PipelineStatus from '../components/pipeline/PipelineStatus'
 import Card from '../components/ui/Card'
 import Button from '../components/ui/Button'
 import LoadingSpinner from '../components/ui/LoadingSpinner'
+import FactsTab from '../components/facts/FactsTab'
 import toast from 'react-hot-toast'
 
 const TABS = ['Documents', 'Facts', 'Timeline', 'Issues', 'Brief Packet', 'Sources']
@@ -96,6 +97,8 @@ export default function ProjectDetailPage() {
           handleDelete={handleDelete}
           uploadPending={uploadMutation.isPending}
         />
+      ) : activeTab === 'Facts' ? (
+        <FactsTab projectId={id} />
       ) : activeTab === 'Sources' ? (
         <SourcesTab projectId={id} />
       ) : (

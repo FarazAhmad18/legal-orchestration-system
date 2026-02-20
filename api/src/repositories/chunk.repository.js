@@ -21,6 +21,14 @@ export async function findByDocumentId(documentId) {
   })
 }
 
+export async function findByProjectId(projectId) {
+  return prisma.chunk.findMany({
+    where: { document: { projectId } },
+    include: { document: { select: { filename: true } } },
+    orderBy: [{ documentId: 'asc' }, { chunkIndex: 'asc' }],
+  })
+}
+
 export async function countByDocumentId(documentId) {
   return prisma.chunk.count({ where: { documentId } })
 }

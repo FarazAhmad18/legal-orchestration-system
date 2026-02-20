@@ -1,4 +1,5 @@
 import * as artifactRepo from '../repositories/artifact.repository.js'
+import { extractFacts } from '../services/factExtract.service.js'
 
 /**
  * Job type → artifact type mapping for analysis steps.
@@ -26,7 +27,7 @@ async function stubHandler(job, artifactType) {
 }
 
 async function handleFactExtract(job) {
-  return stubHandler(job, 'facts_v1')
+  return extractFacts(job)
 }
 
 async function handleTimelineBuild(job) {

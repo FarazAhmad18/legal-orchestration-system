@@ -14,7 +14,7 @@ export function AuthProvider({ children }) {
       try {
         const payload = JSON.parse(atob(token.split('.')[1]))
         if (payload.exp * 1000 > Date.now()) {
-          setUser({ userId: payload.userId, role: payload.role })
+          setUser({ userId: payload.userId, email: payload.email, role: payload.role })
         } else {
           removeToken()
         }

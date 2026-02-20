@@ -17,9 +17,15 @@ async function getExtractor() {
     quantized: true,
   })
 
-  extractor = await loadingPromise
-  loadingPromise = null
-  return extractor
+  try {
+    extractor = await loadingPromise
+    return extractor
+  } catch (err) {
+    console.error('[embedder] Failed to load model:', err.message)
+    throw err
+  } finally {
+    loadingPromise = null
+  }
 }
 
 /**

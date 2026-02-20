@@ -16,7 +16,7 @@ export async function register({ email, password, role }) {
     role: role || 'operator',
   })
 
-  const token = signToken({ userId: user.id, role: user.role })
+  const token = signToken({ userId: user.id, email: user.email, role: user.role })
 
   return {
     user: { id: user.id, email: user.email, role: user.role },
@@ -35,7 +35,7 @@ export async function login({ email, password }) {
     throw ApiError.unauthorized('Invalid email or password')
   }
 
-  const token = signToken({ userId: user.id, role: user.role })
+  const token = signToken({ userId: user.id, email: user.email, role: user.role })
 
   return {
     user: { id: user.id, email: user.email, role: user.role },
