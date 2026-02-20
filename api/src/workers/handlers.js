@@ -1,5 +1,7 @@
 import * as artifactRepo from '../repositories/artifact.repository.js'
 import { extractFacts } from '../services/factExtract.service.js'
+import { buildTimeline } from '../services/timelineBuilder.service.js'
+import { spotIssues } from '../services/issueSpotter.service.js'
 
 /**
  * Job type → artifact type mapping for analysis steps.
@@ -31,11 +33,11 @@ async function handleFactExtract(job) {
 }
 
 async function handleTimelineBuild(job) {
-  return stubHandler(job, 'timeline_v1')
+  return buildTimeline(job)
 }
 
 async function handleIssueSpot(job) {
-  return stubHandler(job, 'issues_v1')
+  return spotIssues(job)
 }
 
 async function handleDraftCompose(job) {

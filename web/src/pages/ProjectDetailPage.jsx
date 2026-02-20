@@ -8,6 +8,8 @@ import Card from '../components/ui/Card'
 import Button from '../components/ui/Button'
 import LoadingSpinner from '../components/ui/LoadingSpinner'
 import FactsTab from '../components/facts/FactsTab'
+import TimelineTab from '../components/timeline/TimelineTab'
+import IssuesTab from '../components/issues/IssuesTab'
 import toast from 'react-hot-toast'
 
 const TABS = ['Documents', 'Facts', 'Timeline', 'Issues', 'Brief Packet', 'Sources']
@@ -99,6 +101,10 @@ export default function ProjectDetailPage() {
         />
       ) : activeTab === 'Facts' ? (
         <FactsTab projectId={id} />
+      ) : activeTab === 'Timeline' ? (
+        <TimelineTab projectId={id} />
+      ) : activeTab === 'Issues' ? (
+        <IssuesTab projectId={id} />
       ) : activeTab === 'Sources' ? (
         <SourcesTab projectId={id} />
       ) : (
