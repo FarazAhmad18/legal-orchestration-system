@@ -15,6 +15,7 @@ import FactsTab from '../components/facts/FactsTab'
 import TimelineTab from '../components/timeline/TimelineTab'
 import IssuesTab from '../components/issues/IssuesTab'
 import BriefPacketTab from '../components/brief/BriefPacketTab'
+import ValidationTab from '../components/validation/ValidationTab'
 import toast from 'react-hot-toast'
 
 const TABS = [
@@ -23,6 +24,7 @@ const TABS = [
   { id: 'Timeline', label: 'Timeline', icon: <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> },
   { id: 'Issues', label: 'Issues', icon: <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg> },
   { id: 'Brief Packet', label: 'Brief Packet', icon: <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18V7.875c0-.621.504-1.125 1.125-1.125H7.5" /></svg> },
+  { id: 'Validation', label: 'Validation', icon: <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /></svg> },
   { id: 'Sources', label: 'Sources', icon: <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg> },
 ]
 
@@ -137,6 +139,8 @@ export default function ProjectDetailPage() {
             <IssuesTab projectId={id} />
           ) : activeTab === 'Brief Packet' ? (
             <BriefPacketTab projectId={id} />
+          ) : activeTab === 'Validation' ? (
+            <ValidationTab projectId={id} />
           ) : activeTab === 'Sources' ? (
             <SourcesTab projectId={id} />
           ) : (

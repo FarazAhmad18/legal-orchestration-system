@@ -1,8 +1,8 @@
-import * as artifactRepo from '../repositories/artifact.repository.js'
 import { extractFacts } from '../services/factExtract.service.js'
 import { buildTimeline } from '../services/timelineBuilder.service.js'
 import { spotIssues } from '../services/issueSpotter.service.js'
 import { composeBrief } from '../services/draftCompose.service.js'
+import { runValidation } from '../services/validate.service.js'
 
 /**
  * Job type → artifact type mapping for analysis steps.
@@ -13,20 +13,6 @@ const JOB_TO_ARTIFACT = {
   issue_spot: 'issues_v1',
   draft_compose: 'brief_v1',
   validate: 'validation_v1',
-}
-
-/**
- * Stub handler — creates a placeholder artifact.
- * Real implementations will replace these in Chunks 5-7.
- */
-async function stubHandler(job, artifactType) {
-  const artifact = await artifactRepo.create({
-    projectId: job.projectId,
-    type: artifactType,
-    contentJson: { _stub: true, message: `Placeholder for ${artifactType}`, generatedAt: new Date().toISOString() },
-    createdByJobId: job.id,
-  })
-  return artifact
 }
 
 async function handleFactExtract(job) {
@@ -46,7 +32,7 @@ async function handleDraftCompose(job) {
 }
 
 async function handleValidate(job) {
-  return stubHandler(job, 'validation_v1')
+  return runValidation(job)
 }
 
 async function handleParseDocument(job) {
