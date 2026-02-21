@@ -7,6 +7,7 @@ import documentRoutes from './document.routes.js'
 import chunkRoutes from './chunk.routes.js'
 import jobRoutes from './job.routes.js'
 import artifactRoutes from './artifact.routes.js'
+import chatRoutes from './chat.routes.js'
 
 const router = Router()
 
@@ -27,5 +28,8 @@ router.use('/:projectId/jobs', jobRoutes)
 
 // Nested artifact routes: /api/projects/:projectId/artifacts
 router.use('/:projectId/artifacts', artifactRoutes)
+
+// Nested chat routes: /api/projects/:projectId/chat
+router.use('/:projectId/chat', chatRoutes)
 
 export default router

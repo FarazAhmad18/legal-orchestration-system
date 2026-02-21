@@ -89,7 +89,16 @@
 }
 
 *::-webkit-scrollbar-thumb:hover {
-  background-color: var(--color-surface-200);
+  background-color: #9ca3af;
+}
+
+/* Hide scrollbar utility */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
 }
 
 /* Focus ring utility */

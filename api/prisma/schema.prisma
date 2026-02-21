@@ -47,6 +47,11 @@ enum ArtifactType {
   validation_v1
 }
 
+enum ChatRole {
+  user
+  assistant
+}
+
 model User {
   id           String    @id @default(uuid())
   email        String    @unique
@@ -54,7 +59,8 @@ model User {
   passwordHash String    @map("password_hash")
   createdAt    DateTime  @default(now()) @map("created_at")
 
-  projects Project[]
+  projects     Project[]
+  chatMessages ChatMessage[]
 
   @@map("users")
 }
@@ -66,10 +72,11 @@ model Project {
   createdBy String   @map("created_by")
   createdAt DateTime @default(now()) @map("created_at")
 
-  creator   User       @relation(fields: [createdBy], references: [id])
-  documents Document[]
-  jobs      Job[]
-  artifacts Artifact[]
+  creator      User          @relation(fields: [createdBy], references: [id])
+  documents    Document[]
+  jobs         Job[]
+  artifacts    Artifact[]
+  chatMessages ChatMessage[]
 
   @@map("projects")
 }
@@ -148,4 +155,19 @@ model Artifact {
   job     Job?    @relation(fields: [createdByJobId], references: [id])
 
   @@map("artifacts")
+}
+
+model ChatMessage {
+  id        String   @id @default(uuid())
+  projectId String   @map("project_id")
+  userId    String   @map("user_id")
+  role      ChatRole
+  content   String
+  citations Json?    @map("citations")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  project Project @relation(fields: [projectId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+
+  @@map("chat_messages")
 }

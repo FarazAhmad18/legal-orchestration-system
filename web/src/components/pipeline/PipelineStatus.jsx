@@ -2,6 +2,7 @@ import { motion } from 'motion/react'
 import { usePipelineStatus, useRunAnalysis } from '../../hooks/useJobs'
 import { useChunkStats } from '../../hooks/useChunks'
 import Button from '../ui/Button'
+import DraftBanner from '../ui/DraftBanner'
 import toast from 'react-hot-toast'
 
 const STEPS = [
@@ -64,7 +65,7 @@ export default function PipelineStatus({ projectId }) {
       <div className="p-5">
         <div className="flex items-center justify-between">
           {/* Stepper */}
-          <div className="flex items-center gap-0">
+          <div className="flex items-center gap-0 overflow-x-auto scrollbar-none">
             {isLoading ? (
               <span className="text-sm text-gray-400">Loading...</span>
             ) : (
@@ -74,7 +75,7 @@ export default function PipelineStatus({ projectId }) {
                 return (
                   <div key={step.type} className="flex items-center">
                     {i > 0 && (
-                      <div className={`h-0.5 w-8 transition-colors duration-500 ${
+                      <div className={`h-0.5 w-8 shrink-0 transition-colors duration-500 ${
                         status === 'completed' || getStepStatus(pipeline, STEPS[i - 1].type) === 'completed'
                           ? 'bg-brand-400'
                           : 'bg-surface-200'
@@ -131,14 +132,7 @@ export default function PipelineStatus({ projectId }) {
           </Button>
         </div>
 
-        {isCompleted && (
-          <div className="mt-4 flex items-center gap-2 rounded-lg bg-amber-50 px-4 py-2.5 text-xs text-amber-700">
-            <svg className="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-            </svg>
-            DRAFT - Human Review Required. All outputs are drafting assistance only, not legal advice.
-          </div>
-        )}
+        {isCompleted && <DraftBanner className="mt-4" />}
       </div>
     </div>
   )
