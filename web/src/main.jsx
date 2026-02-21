@@ -20,7 +20,14 @@ createRoot(document.getElementById('root')).render(
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <App />
-        <Toaster position="top-right" />
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            style: { fontFamily: 'Inter, sans-serif', fontSize: '14px', borderRadius: '12px', padding: '12px 16px' },
+            success: { iconTheme: { primary: '#10b981', secondary: '#fff' } },
+            error: { iconTheme: { primary: '#ef4444', secondary: '#fff' } },
+          }}
+        />
       </AuthProvider>
     </QueryClientProvider>
   </StrictMode>,

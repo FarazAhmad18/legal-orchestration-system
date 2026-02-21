@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'motion/react'
 import { useProject } from '../hooks/useProjects'
@@ -11,11 +11,13 @@ import Badge from '../components/ui/Badge'
 import Skeleton from '../components/ui/Skeleton'
 import EmptyState from '../components/ui/EmptyState'
 import LoadingSpinner from '../components/ui/LoadingSpinner'
+import ConfirmModal from '../components/ui/ConfirmModal'
 import FactsTab from '../components/facts/FactsTab'
 import TimelineTab from '../components/timeline/TimelineTab'
 import IssuesTab from '../components/issues/IssuesTab'
 import BriefPacketTab from '../components/brief/BriefPacketTab'
 import ValidationTab from '../components/validation/ValidationTab'
+import ChatPanel from '../components/chat/ChatPanel'
 import toast from 'react-hot-toast'
 
 const TABS = [
@@ -44,6 +46,8 @@ const STATUS_BADGE = {
 export default function ProjectDetailPage() {
   const { id } = useParams()
   const [activeTab, setActiveTab] = useState('Documents')
+  const [chatOpen, setChatOpen] = useState(false)
+  const [deleteTarget, setDeleteTarget] = useState(null)
   const fileInputRef = useRef(null)
 
   const { data: project, isLoading: projectLoading, error: projectError } = useProject(id)
@@ -63,13 +67,13 @@ export default function ProjectDetailPage() {
     e.target.value = ''
   }
 
-  function handleDelete(doc) {
-    if (!confirm(`Delete "${doc.filename}"?`)) return
-    deleteMutation.mutate(doc.id, {
-      onSuccess: () => toast.success('Document deleted'),
-      onError: (err) => toast.error(err.response?.data?.error?.message || 'Delete failed'),
+  const confirmDelete = useCallback(() => {
+    if (!deleteTarget) return
+    deleteMutation.mutate(deleteTarget.id, {
+      onSuccess: () => { toast.success('Document deleted'); setDeleteTarget(null) },
+      onError: (err) => { toast.error(err.response?.data?.error?.message || 'Delete failed'); setDeleteTarget(null) },
     })
-  }
+  }, [deleteTarget, deleteMutation])
 
   if (projectLoading) return <LoadingSpinner className="mt-12" />
   if (projectError) return <p className="text-danger">Failed to load project</p>
@@ -88,7 +92,7 @@ export default function ProjectDetailPage() {
 
       {/* Animated tab bar */}
       <div className="mb-6 border-b border-surface-200">
-        <nav className="-mb-px flex gap-1">
+        <nav className="-mb-px flex gap-1 overflow-x-auto scrollbar-none">
           {TABS.map((tab) => (
             <button
               key={tab.id}
@@ -128,7 +132,7 @@ export default function ProjectDetailPage() {
               docsLoading={docsLoading}
               fileInputRef={fileInputRef}
               handleFileChange={handleFileChange}
-              handleDelete={handleDelete}
+              onDelete={setDeleteTarget}
               uploadPending={uploadMutation.isPending}
             />
           ) : activeTab === 'Facts' ? (
@@ -150,11 +154,38 @@ export default function ProjectDetailPage() {
           )}
         </motion.div>
       </AnimatePresence>
+
+      {/* Floating Chat Button */}
+      <motion.button
+        onClick={() => setChatOpen(true)}
+        className="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-brand-600 text-white shadow-lg transition-colors hover:bg-brand-700 focus:outline-none focus:ring-4 focus:ring-brand-500/30"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+      >
+        <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 011.037-.443 48.282 48.282 0 005.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
+        </svg>
+      </motion.button>
+
+      {/* Chat Panel */}
+      <ChatPanel projectId={id} open={chatOpen} onClose={() => setChatOpen(false)} />
+
+      {/* Delete confirmation modal */}
+      <ConfirmModal
+        open={!!deleteTarget}
+        title="Delete document"
+        message={deleteTarget ? `Are you sure you want to delete "${deleteTarget.filename}"? This action cannot be undone.` : ''}
+        confirmLabel="Delete"
+        variant="danger"
+        loading={deleteMutation.isPending}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   )
 }
 
-function DocumentsTab({ documents, docsLoading, fileInputRef, handleFileChange, handleDelete, uploadPending }) {
+function DocumentsTab({ documents, docsLoading, fileInputRef, handleFileChange, onDelete, uploadPending }) {
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
@@ -233,7 +264,7 @@ function DocumentsTab({ documents, docsLoading, fileInputRef, handleFileChange, 
                     {new Date(doc.createdAt).toLocaleDateString()}
                   </td>
                   <td className="whitespace-nowrap px-6 py-4 text-right">
-                    <Button variant="ghost" size="sm" onClick={() => handleDelete(doc)}>
+                    <Button variant="ghost" size="sm" onClick={() => onDelete(doc)}>
                       <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                       </svg>
